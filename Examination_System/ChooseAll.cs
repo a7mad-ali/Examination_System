@@ -8,22 +8,33 @@ namespace Examination_System
 {
     public class ChooseAll : Question
     {
+        public ChooseAll() : base() { }
 
-        public ChooseAll(string header , string body , int marks , AnswerList answers) : base(header , body , marks) 
+        public ChooseAll(string header, string body, int marks)
+            : base(header, body, marks) { }
+
+        public override void Display(bool showCorrectAnswers = false)
         {
-            Answers = answers;
+            Console.WriteLine(ToString());
+
+            for (int i = 0; i < Answers.Count; i++)
+            {
+                var ans = Answers[i];
+                Console.WriteLine($"{(char)('A' + i)}. {ans.Body}" +
+                    (showCorrectAnswers && ans.IsCorrect ? "  <-- correct" : ""));
+            }
         }
+
+        public override object Clone()
+        {
+            var copy = new ChooseAll(Header, Body, Marks);
+            copy.Answers = (AnswerList)Answers.Clone();
+            return copy;
+        }
+
         public override string GetQuestion()
         {
-            string result = $"{Header} \n {Body} \n ";
-            int i = 1;
-            foreach (var answer in Answers)
-            {
-                result += $"{i}- {answer.Text} \n";
-                i++;
-            }
-            return result;
-
+            throw new NotImplementedException();
         }
     }
 }

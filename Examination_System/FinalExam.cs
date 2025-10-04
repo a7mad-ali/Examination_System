@@ -8,17 +8,19 @@ namespace Examination_System
 {
     public class FinalExam : Exam
     {
-        public FinalExam(TimeSpan time, Subject subj) : base(time, subj) { }
-    
+        public FinalExam(int id, TimeSpan duration, Subject subject)
+            : base(id, duration, subject) { }
+
         public override void ShowExam()
         {
-            Console.WriteLine("********** Final Exam ***********");
-            foreach(var KeyValuePair in Questions)
+            Console.WriteLine("=== FINAL EXAM ===");
+            foreach (var q in Questions)
             {
-                KeyValuePair.Key.GetQuestion();
-                Console.WriteLine("--------------------");
+                q.Display(false);
+                Console.WriteLine();
             }
-        }
 
+            Console.WriteLine(" Correct answers are hidden until results are published.\n");
+        }
     }
 }

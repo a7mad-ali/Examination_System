@@ -8,22 +8,19 @@ namespace Examination_System
 {
     public class PracticeExam : Exam
     {
-        public PracticeExam(TimeSpan Time , Subject Subj) : base(Time , Subj) { }
-        
+        public PracticeExam(int id, TimeSpan duration, Subject subject)
+            : base(id, duration, subject) { }
+
         public override void ShowExam()
         {
-            Console.WriteLine("==== Practice Exam ====");
-            foreach(var keyvaluepair in Questions)
+            Console.WriteLine("=== PRACTICE EXAM ===");
+            foreach (var q in Questions)
             {
-                keyvaluepair.Key.GetQuestion();
-                Console.WriteLine("Correct Answes :");
-                foreach (var answer in keyvaluepair.Value)
-                {
-                    if (answer.IsCorrect)
-                        Console.WriteLine(answer);
-                }
-                Console.WriteLine("===========================================================================");
+                q.Display(true); 
+                Console.WriteLine();
             }
+
+            Console.WriteLine(" Correct answers are shown for practice.\n");
         }
     }
 }
