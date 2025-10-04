@@ -6,35 +6,35 @@ using System.Threading.Tasks;
 
 namespace Examination_System
 {
-    public class ChooseAll : Question
+    internal class ChooseAll : Question
     {
-        public ChooseAll() : base() { }
+        public ChooseAll(string header, string body, int mark)
+            : base(header, body, mark) { }
 
-        public ChooseAll(string header, string body, int marks)
-            : base(header, body, marks) { }
-
-        public override void Display(bool showCorrectAnswers = false)
+        public override bool CheckValue(string input)
         {
-            Console.WriteLine(ToString());
+            var answers = input.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                               .Select(x => int.TryParse(x.Trim(), out int n) ? n : -1)
+                               .Where(n => n > 0)
+                               .ToHashSet();
 
-            for (int i = 0; i < Answers.Count; i++)
+            for (int i = 0; i < AnsList.Count; i++)
             {
-                var ans = Answers[i];
-                Console.WriteLine($"{(char)('A' + i)}. {ans.Body}" +
-                    (showCorrectAnswers && ans.IsCorrect ? "  <-- correct" : ""));
+                if (AnsList[i].IsCorrect != answers.Contains(i + 1))
+                    return false;
             }
+            return true;
         }
 
-        public override object Clone()
+        public override void ShowQuestion()
         {
-            var copy = new ChooseAll(Header, Body, Marks);
-            copy.Answers = (AnswerList)Answers.Clone();
-            return copy;
-        }
-
-        public override string GetQuestion()
-        {
-            throw new NotImplementedException();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"\n[Choose Multiple Answers] {Header} - {Body} ({Mark} Mark)");
+            Console.ResetColor();
+            for (int i = 0; i < AnsList.Count; i++)
+                Console.WriteLine($"{i + 1}) {AnsList[i].Body}");
+            Console.WriteLine("Enter answers separated by commas (e.g., 1,3)");
         }
     }
+
 }

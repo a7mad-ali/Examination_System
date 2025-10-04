@@ -2,46 +2,60 @@
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            Subject subject = new Subject(1, "C# Programming");
+            Console.Title = "Examination System v2.0";
+            Console.WriteLine("=== Welcome to the Examination System ===\n");
 
-            var q1 = new TrueOrFalse("Q1", "C# is a programming language.", 2);
-            q1.Answers.Add(new Answer("True", true));
-            q1.Answers.Add(new Answer("False"));
+            var subject = new Subject(100, "General Knowledge");
 
-            var q2 = new ChooseOne("Q2", "Which company developed C#?", 3);
-            q2.Answers.Add(new Answer("Google"));
-            q2.Answers.Add(new Answer("Microsoft", true));
-            q2.Answers.Add(new Answer("Apple"));
+            string path = Path.Combine(Environment.CurrentDirectory, "QuestionLog.txt");
+            var qList = new QuestionList(path);
 
-            var q3 = new ChooseAll("Q3", "Select OOP principles:", 4);
-            q3.Answers.Add(new Answer("Encapsulation", true));
-            q3.Answers.Add(new Answer("Inheritance", true));
-            q3.Answers.Add(new Answer("Compilation"));
+            // create questions
+            var q1 = new TrueOrFalse("Q1", "The Earth is round.", 2);
+            q1.AnsList[0].IsCorrect = true;
 
-            Console.WriteLine("Select exam type:\n1. Practice Exam\n2. Final Exam");
-            Console.Write("Enter choice: ");
-            int choice = int.Parse(Console.ReadLine());
+            var q2 = new ChooseOne("Q2", "Which planet is known as the Red Planet?", 3);
+            q2.AnsList.Add(new Answer("Earth"));
+            q2.AnsList.Add(new Answer("Mars", true));
+            q2.AnsList.Add(new Answer("Venus"));
 
-            Exam exam;
-            if (choice == 1)
-                exam = new PracticeExam(100, TimeSpan.FromMinutes(30), subject);
+            var q3 = new ChooseAll("Q3", "Select all prime numbers:", 5);
+            q3.AnsList.Add(new Answer("2", true));
+            q3.AnsList.Add(new Answer("3", true));
+            q3.AnsList.Add(new Answer("4"));
+            q3.AnsList.Add(new Answer("5", true));
+
+            qList.Add(q1);
+            qList.Add(q2);
+            qList.Add(q3);
+
+            var practice = new PracticeExam(subject, qList, TimeSpan.FromMinutes(10));
+            var final = new FinalExam(subject, qList, TimeSpan.FromMinutes(15));
+
+            var s1 = new Student("Ahmed");
+            var s2 = new Student("Khaled");
+
+            practice.ExamStarted += s1.OnExamStarted;
+            practice.ExamStarted += s2.OnExamStarted;
+            final.ExamStarted += s1.OnExamStarted;
+
+            Console.WriteLine("\nChoose exam type:");
+            Console.WriteLine("1) Practice Exam");
+            Console.WriteLine("2) Final Exam");
+            Console.Write("Your choice: ");
+            string? choice = Console.ReadLine();
+
+            Console.Clear();
+            if (choice == "1")
+                practice.ShowExam();
             else
-                exam = new FinalExam(200, TimeSpan.FromMinutes(60), subject);
+                final.ShowExam();
 
-            exam.ExamStarted += (msg) => Console.WriteLine($"\n📢 {msg}\n");
-
-            exam.Questions.Add(q1);
-            exam.Questions.Add(q2);
-            exam.Questions.Add(q3);
-
-            exam.StartExam();
-            exam.ShowExam();
-
-            exam.FinishExam();
-            Console.WriteLine($"\nExam Finished. Mode: {exam.Mode}");
+            Console.WriteLine("\n Results saved in Results.txt");
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
         }
-    
     }
 }

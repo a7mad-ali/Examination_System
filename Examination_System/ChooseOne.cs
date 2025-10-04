@@ -6,35 +6,26 @@ using System.Threading.Tasks;
 
 namespace Examination_System
 {
-    public class ChooseOne : Question
+    internal class ChooseOne : Question
     {
-        public ChooseOne() : base() { }
+        public ChooseOne(string header, string body, int mark)
+            : base(header, body, mark) { }
 
-        public ChooseOne(string header, string body, int marks)
-            : base(header, body, marks) { }
-
-        public override void Display(bool showCorrectAnswers = false)
+        public override bool CheckValue(string input)
         {
-            Console.WriteLine(ToString());
-
-            for (int i = 0; i < Answers.Count; i++)
-            {
-                var ans = Answers[i];
-                Console.WriteLine($"{(char)('A' + i)}. {ans.Body}" +
-                    (showCorrectAnswers && ans.IsCorrect ? "  <-- correct" : ""));
-            }
+            return int.TryParse(input, out int choice)
+                && choice >= 1 && choice <= AnsList.Count
+                && AnsList[choice - 1].IsCorrect;
         }
 
-        public override object Clone()
+        public override void ShowQuestion()
         {
-            var copy = new ChooseOne(Header, Body, Marks);
-            copy.Answers = (AnswerList)Answers.Clone();
-            return copy;
-        }
-
-        public override string GetQuestion()
-        {
-            throw new NotImplementedException();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"\n[Choose One Answer] {Header} - {Body} ({Mark} Mark)");
+            Console.ResetColor();
+            for (int i = 0; i < AnsList.Count; i++)
+                Console.WriteLine($"{i + 1}) {AnsList[i].Body}");
         }
     }
+
 }

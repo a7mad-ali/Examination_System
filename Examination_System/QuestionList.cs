@@ -8,36 +8,25 @@ namespace Examination_System
 {
     public class QuestionList : List<Question>
     {
-        private readonly string _logFilePath;
+        private readonly string _filePath;
 
-        public QuestionList()
+        public QuestionList(string filePath)
         {
-            string fileName = $"QuestionLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
-            _logFilePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            _filePath = filePath;
+            var dir = Path.GetDirectoryName(_filePath);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
         }
 
-        public new void Add(Question question)
+        public new void Add(Question q)
         {
-            base.Add(question);
-            LogQuestion(question);
-        }
-
-        private void LogQuestion(Question question)
-        {
-            using (StreamWriter writer = new StreamWriter(_logFilePath, true))
-            {
-                writer.WriteLine("===================================");
-                writer.WriteLine($"Added on: {DateTime.Now}");
-                writer.WriteLine($"Header: {question.Header}");
-                writer.WriteLine($"Body: {question.Body}");
-                writer.WriteLine($"Marks: {question.Marks}");
-                writer.WriteLine("Answers:");
-                foreach (var ans in question.Answers)
-                    writer.WriteLine($" - {ans.Body} (Correct: {ans.IsCorrect})");
-                writer.WriteLine("===================================\n");
-            }
+            base.Add(q);
+            using var sw = new StreamWriter(_filePath, true);
+            sw.WriteLine($"[{DateTime.Now}] {q}");
+            foreach (var a in q.AnsList)
+                sw.WriteLine($"    - {a.Body} | Correct: {a.IsCorrect}");
+            sw.WriteLine("--------------------------------------------------");
         }
     }
-
 
 }

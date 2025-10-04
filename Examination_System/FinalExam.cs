@@ -6,21 +6,32 @@ using System.Threading.Tasks;
 
 namespace Examination_System
 {
-    public class FinalExam : Exam
+    internal class FinalExam : Exam
     {
-        public FinalExam(int id, TimeSpan duration, Subject subject)
-            : base(id, duration, subject) { }
+        public FinalExam(Subject s, QuestionList q, TimeSpan t) : base(s, q, t) { }
 
         public override void ShowExam()
         {
+            Start();
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("=== FINAL EXAM ===");
-            foreach (var q in Questions)
+            Console.ResetColor();
+
+            double totalScore = 0, totalMarks = QuestionListForExam.Sum(q => q.Mark);
+
+            foreach (var q in QuestionListForExam)
             {
-                q.Display(false);
+                q.ShowQuestion();
+                Console.Write("Your answer: ");
+                string input = Console.ReadLine() ?? "";
+                if (q.CheckValue(input)) totalScore += q.Mark;
                 Console.WriteLine();
             }
 
-            Console.WriteLine(" Correct answers are hidden until results are published.\n");
+            Finished();
+            double percent = (totalScore / totalMarks) * 100;
+            Console.WriteLine($"Your total score: {totalScore}/{totalMarks} ({percent:F2}%)");
+            File.AppendAllText("Results.txt", $"[Final] {SubjectForExam.Name}: {totalScore}/{totalMarks} ({percent:F2}%)\n");
         }
     }
 }
